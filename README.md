@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Python 3.x (Specify the python version you are using. Make sure python and pip are added to PATH)
+- Python 3.10 
 - Pipenv (Install it using `pip install pipenv`)
 
 ## Prepare the Pipenv environment to run the scripts
