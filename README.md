@@ -63,7 +63,10 @@ time python download-genbank.py -t "protozoa" -o "/mnt/genbank/" -f "/mnt/genban
 ```bash
 time python3 gbff2fa.py -t "protozoa" -o "/mnt/genbank/"
 time python extract_rDNA.py
+```
+extract_rDNA.py will require you to manually set the parameters within the script.
 
+```bash
 time python3 gbff2fa.py -t "fungi" -o "/mnt/genbank/"
 time python extract_rDNA.py
 ```
