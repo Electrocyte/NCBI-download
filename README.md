@@ -72,7 +72,7 @@ time python extract_rDNA.py
 # #########################
 ### Meanwhile, start building the seqid2taxid.map file.
 Requires: https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz, fastest way is to download it from website.
-This will conversion of nucl_gb.accession2taxid.gz into a .map, however it is incomplete.
+This will convert of nucl_gb.accession2taxid.gz into a .map, however it is incomplete.
 ```bash
 time python NCBI_acc2taxid_seqid2taxid.py
 ```
