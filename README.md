@@ -1,6 +1,7 @@
 # Building your custom NCBI database
 
 ### These do not work, sadly.
+
 ```bash
 wget --recursive --no-parent --timestamping --cut-dirs=3 --no-host-directories --accept "*.gbff.gz" -P fungi/ ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/fungi/
 wget --recursive --no-parent --timestamping --cut-dirs=3 --no-host-directories --accept "*.gbff.gz" -P protozoa/ ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/protozoa/
@@ -32,7 +33,8 @@ time python download-genbank.py -t "protozoa" -o "/mnt/genbank/" -f "/mnt/genban
 
 
 # #########################
-### convert gbff to fa and extract rDNA
+### Convert gbff to fa and extract rDNA
+
 ```bash
 time python3 gbff2fa.py -t "protozoa" -o "/mnt/genbank/"
 time python extract_rDNA.py
@@ -51,7 +53,8 @@ time python NCBI_acc2taxid_seqid2taxid.py
 ```
 
 
-### to make it complete, we need:
+### To make it complete, we need:
+
 https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 ```bash
 time python taxonIDs.py
