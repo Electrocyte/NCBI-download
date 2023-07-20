@@ -15,12 +15,14 @@ import os
 bacterial = False
 if bacterial:
     fasta_directory = "SequencingData/Centrifuge_libraries/bacteria/"
+    out_head = "" # e.g. /mnt/e/
 
 fungal = True
 
 fungal_centrifuge = False
 if fungal_centrifuge:
     fasta_directory = "SequencingData/Centrifuge_libraries/any_fungus/"
+    out_head = "" # e.g. /home/yourname
 
 fungal_JGI = False
 if fungal_JGI:
@@ -44,9 +46,9 @@ if fungal:
     _type_ = "18S-ITS-28S"
 
     if fungal_centrifuge:
-        save_loc = "operons/library/EUK/"
+        save_loc = f"{out_head}/operons/library/EUK/"
         fasta_file_paths = f"{fasta_directory}library/fungi/*.fna"
-        seqid_loc = f"operons/operon-{_type_}-NCBI-seqids.csv"
+        seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
         multiline = False
 
     if fungal_JGI:
@@ -79,9 +81,9 @@ if bacterial:
     primerRrev = "GTTTGGCACCTCGATGTC" # rev comp
 
     _type_ = "16S-ITS-23S"
-    save_loc = "operons/library/BAC/"
+    save_loc = "{out_head}/operons/library/BAC/"
     fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
-    seqid_loc = f"operons/operon-{_type_}-NCBI-seqids.csv"
+    seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
     multiline = False
 
 
