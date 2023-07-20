@@ -1,5 +1,30 @@
 # Building your custom NCBI database
 
+## Prerequisites
+
+- Python 3.x (Specify the python version you are using. Make sure python and pip are added to PATH)
+- Pipenv (Install it using `pip install pipenv`)
+
+## Prepare the Pipenv environment to run the scripts
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Electrocyte/NCBI-download.git
+```
+
+2. Navigate to the project directory:
+
+```bash
+cd NCBI-download/
+```
+
+3. Install dependencies using Pipenv:
+
+```bash
+pipenv install
+```
+
 ### These do not work, sadly.
 
 ```bash
@@ -12,14 +37,16 @@ wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid
 ```
 
 ### Example run:
+
+
+## Running the Project
+
+### Activate the Pipenv shell:
+
 ```bash
-cd GitHub/NCBI-download/
+cd NCBI-download/
+pipenv shell
 ```
-
-
-# Prepare the pipenv environment to run the scripts.
-
-
 
 # #########################
 ### Download genbank .gbff.gz
