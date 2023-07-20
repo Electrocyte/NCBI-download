@@ -21,8 +21,8 @@ def create_index_to_name_dict(names_file):
     return index_to_name
 
 #### EDIT HERE ####
-taxonomy_dir = "/mnt/genbank/taxonomy/"
-output_dir = "/mnt/genbank/"
+taxonomy_dir = "/mnt/e/SequencingData/genbank/taxonomy/"
+output_dir = "/mnt/e/SequencingData/genbank/"
 #### EDIT HERE ####
 
 nodes_file = f"{taxonomy_dir}nodes.dmp"  # replace with your actual path

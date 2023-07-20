@@ -11,8 +11,29 @@ import glob
 import re
 import os
 
-fungal = True
+#### EDIT HERE ####
 bacterial = False
+if bacterial:
+    fasta_directory = "SequencingData/Centrifuge_libraries/bacteria/"
+
+fungal = True
+
+fungal_centrifuge = False
+if fungal_centrifuge:
+    fasta_directory = "SequencingData/Centrifuge_libraries/any_fungus/"
+
+fungal_JGI = False
+if fungal_JGI:
+    _folder_ = "/mnt/e/SequencingData/JGI/"
+
+protozoa_genbank = False
+if protozoa_genbank:
+    _folder_ = "/mnt/e/SequencingData/genbank/"
+
+fungal_genbank = True
+if fungal_genbank:
+    _folder_ = "/mnt/e/SequencingData/genbank/"
+#### EDIT HERE ####
 
 if fungal:
     # fungal
@@ -20,26 +41,31 @@ if fungal:
     primerRnorm = "CTATGTTTTAATTAGACAGTCAG"  # 28S RCA95m R
     primerFrev = "GACAAGCATATGACTACTG" # rev comp
     primerRrev = "CTGACTGTCTAATTAAAACATAG" # rev comp
-
-    # _type_ = "18S-ITS-28S"
-    # save_loc = "/mnt/library/EUK/"
-    # fasta_file_paths = "library/fungi/*.fna"
-    # seqid_loc = f"/mnt/operon-{_type_}-NCBI-seqids.csv"
-    # multiline = False
-
-    # _folder_ = "/mnt/JGI/"
-    # _type_ = "18S-ITS-28S"
-    # save_loc = f"{_folder_}/EUK/"
-    # fasta_file_paths = f"{_folder_}/renamed/*.fasta"
-    # seqid_loc = f"{_folder_}/operon-{_type_}-JGI-seqids.csv"
-    # multiline = True
-
-    _folder_ = "/mnt/genbank/"
     _type_ = "18S-ITS-28S"
-    save_loc = f"{_folder_}/EUK-PROTO/"
-    fasta_file_paths = f"{_folder_}/protozoa_fa/*.fasta"
-    seqid_loc = f"{_folder_}/operon-{_type_}-NCBI-gbff-seqids.csv"
-    multiline = False
+
+    if fungal_centrifuge:
+        save_loc = "operons/library/EUK/"
+        fasta_file_paths = f"{fasta_directory}library/fungi/*.fna"
+        seqid_loc = f"operons/operon-{_type_}-NCBI-seqids.csv"
+        multiline = False
+
+    if fungal_JGI:
+        save_loc = f"{_folder_}/EUK/"
+        fasta_file_paths = f"{_folder_}/renamed/*.fasta"
+        seqid_loc = f"{_folder_}/operon-{_type_}-JGI-seqids.csv"
+        multiline = True
+
+    if protozoa_genbank:
+        save_loc = f"{_folder_}/EUK-PROTO/"
+        fasta_file_paths = f"{_folder_}/protozoa_fa/*.fasta"
+        seqid_loc = f"{_folder_}/protozoa-operon-{_type_}-NCBI-gbff-seqids.csv"
+        multiline = False
+
+    if fungal_genbank:
+        save_loc = f"{_folder_}/EUK-FUNGI/"
+        fasta_file_paths = f"{_folder_}/fungi_fa/*.fasta"
+        seqid_loc = f"{_folder_}/fungi-operon-{_type_}-NCBI-gbff-seqids.csv"
+        multiline = False
 
 if bacterial:
     # bacterial
@@ -53,9 +79,9 @@ if bacterial:
     primerRrev = "GTTTGGCACCTCGATGTC" # rev comp
 
     _type_ = "16S-ITS-23S"
-    save_loc = "/mnt/library/BAC/"
-    fasta_file_paths = "library/bacteria/*.fna"
-    seqid_loc = f"/mnt/operon-{_type_}-NCBI-seqids.csv"
+    save_loc = "operons/library/BAC/"
+    fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
+    seqid_loc = f"operons/operon-{_type_}-NCBI-seqids.csv"
     multiline = False
 
 

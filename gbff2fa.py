@@ -7,8 +7,9 @@ from Bio import SeqIO
 # the root directory where you want to start your search
 
 #### EDIT HERE ####
-directory = "/mnt/genbank/"
-target = "protozoa"
+directory = "/mnt/e/SequencingData/genbank/"
+# target = "protozoa"
+target = "fungi"
 #### EDIT HERE ####
 
 root_dir = f"{directory}{target}"

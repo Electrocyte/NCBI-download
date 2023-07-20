@@ -9,7 +9,7 @@ from skbio.stats.distance import permanova
 # For each categorical variable you are interested in, perform PERMANOVA:
 
 #### EDIT HERE ####
-directory = "/mnt/Confidence/"
+directory = "/mnt/path/to/Confidence/"
 #### EDIT HERE ####
 
 coords_file = f"{directory}/coord-df.csv"
