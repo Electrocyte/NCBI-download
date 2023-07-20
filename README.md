@@ -17,6 +17,10 @@ cd GitHub/NCBI-download/
 ```
 
 
+# Prepare the pipenv environment to run the scripts.
+
+
+
 # #########################
 ### Download genbank .gbff.gz
 
