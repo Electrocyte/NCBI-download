@@ -10,7 +10,7 @@ This will get you a starting point for taxonomy:
 wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
 ```
 
-# Example run:
+### Example run:
 ```bash
 cd GitHub/NCBI-download/
 ```
@@ -27,10 +27,10 @@ time ./download-genbank.py -t "protozoa" -o "/mnt/genbank/"
 time python download-genbank.py -t "protozoa" -o "/mnt/genbank/" -f "/mnt/genbank/protozoa-failures.json"
 ```
 
-# remember to change target to organisms desired, found here: ftp://ftp.ncbi.nlm.nih.gov/genomes/
+### remember to change target to organisms desired, found here: ftp://ftp.ncbi.nlm.nih.gov/genomes/
 
 # #########################
-# convert gbff to fa and extract rDNA
+### convert gbff to fa and extract rDNA
 ```bash
 time python3 gbff2fa.py -t "protozoa" -o "/mnt/genbank/"
 time python extract_rDNA.py
