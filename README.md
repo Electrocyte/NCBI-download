@@ -25,12 +25,6 @@ cd NCBI-download/
 pipenv install
 ```
 
-### These do not work, sadly.
-
-```bash
-wget --recursive --no-parent --timestamping --cut-dirs=3 --no-host-directories --accept "*.gbff.gz" -P fungi/ ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/fungi/
-wget --recursive --no-parent --timestamping --cut-dirs=3 --no-host-directories --accept "*.gbff.gz" -P protozoa/ ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/protozoa/
-```
 This will get you a starting point for taxonomy:
 ```bash
 wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
@@ -91,3 +85,11 @@ https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 time python taxonIDs.py
 ```
 This will use the taxonomy names.dmp and nodes.dmp to fill in the missing taxonIDs.
+
+
+### These do not work, sadly.
+
+```bash
+wget --recursive --no-parent --timestamping --cut-dirs=3 --no-host-directories --accept "*.gbff.gz" -P fungi/ ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/fungi/
+wget --recursive --no-parent --timestamping --cut-dirs=3 --no-host-directories --accept "*.gbff.gz" -P protozoa/ ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/protozoa/
+```
