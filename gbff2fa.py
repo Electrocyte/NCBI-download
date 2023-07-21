@@ -1,16 +1,26 @@
 import os
 import glob
 import json
+import argparse
 import subprocess
 from Bio import SeqIO
 
-# the root directory where you want to start your search
 
-#### EDIT HERE ####
-directory = "/mnt/e/SequencingData/genbank/"
+parser = argparse.ArgumentParser(description='Convert gbff files to fasta from NCBI')
+
+parser.add_argument('-t', '--target', help='Input kingdom target from NCBI')
+parser.add_argument('-o', '--directory', help='directory top level')
+
+
+args = parser.parse_args()
+
+target = args.target
+directory = args.directory
+
+
+# # the root directory where you want to start your search
+# directory = "/mnt/e/SequencingData/genbank/"
 # target = "protozoa"
-target = "fungi"
-#### EDIT HERE ####
 
 root_dir = f"{directory}{target}"
 
