@@ -101,44 +101,53 @@ def main(file_path: str) -> List[List[Union[str, float, int]]]:
     print(f"Taxon: {fname}, Total reads: {total_reads}")
     return list_var
 
+sample_config = "/mnt/d/GitHub/SMART-CAMP/configs/viral_DNA_all14.txt"
+# sample_config = "/mnt/d/GitHub/SMART-CAMP/configs/temp_aDNA_all11.txt"
+samples = [line.rstrip('\n').split(',') for line in open(sample_config)]
+samples = [item for sublist in samples for item in sublist]
 
-directory_path = '/mnt/d/SequencingData/Harmonisation/DNA/analysis/sample_data/20230823_aDNA_Pa-9027-16S-23S-2X-non-bisulfite-primers-5_1000CFU_924_12/trimmed/no*q'
-fq = glob.glob(directory_path)
-fq = []
+for s in samples:
+    print(f"\nProcessing {s}...")
+    directory_path = f'/mnt/e/SequencingData/Viral_human/analysis/sample_data/{s}/trimmed/no*q'
+    # directory_path = f'/mnt/d/SequencingData/Harmonisation/DNA/analysis/sample_data/{s}/trimmed/no*q'
+    fq = glob.glob(directory_path)
+    fq = []
 
-# New path for FASTA files
-fasta_directory_path = '/mnt/d/SequencingData/Harmonisation/DNA/analysis/sample_data/20230823_aDNA_Pa-9027-16S-23S-2X-non-bisulfite-primers-5_1000CFU_924_12/trimmed/minimap2-no-host/*Centrifuge.fasta'
-fa = glob.glob(fasta_directory_path)
+    # New path for FASTA files
+    fasta_directory_path = f'/mnt/e/SequencingData/Viral_human/analysis/sample_data/{s}/trimmed/minimap2-no-host/*Centrifuge.fasta'
+    # fasta_directory_path = f'/mnt/d/SequencingData/Harmonisation/DNA/analysis/sample_data/{s}/trimmed/minimap2-no-host/*Centrifuge.fasta'
+    fa = glob.glob(fasta_directory_path)
 
-# Using the function
-# filtered_fa = [file for file in fa if 'BAC-operons' in file]
-# print(filtered_fa)
+    # Using the function
+    # filtered_fa = [file for file in fa if 'BAC-operons' in file]
+    # print(filtered_fa)
 
-list_var = []
+    list_var = []
 
-if len(fq) > 0:
-    for i in fq:
-        dict_var = main(i)
-        list_var.append(dict_var)
+    if len(fq) > 0:
+        for i in fq:
+            dict_var = main(i)
+            list_var.append(dict_var)
 
-elif len(fa) > 0:
-    for j in fa:
-        # print(j)
-        dict_var = main(j)
-        list_var.append(dict_var)
+    elif len(fa) > 0:
+        for j in fa:
+            # print(j)
+            dict_var = main(j)
+            list_var.append(dict_var)
 
-# Convert list of dictionaries to DataFrame
-df = pd.DataFrame([item for sublist in list_var for item in sublist],
-                  columns=['Taxon', 'Read ID', 'Variance', 'GC Content', 'Total Reads'])
+    # Convert list of dictionaries to DataFrame
+    df = pd.DataFrame([item for sublist in list_var for item in sublist],
+                    columns=['Taxon', 'Read ID', 'Variance', 'GC Content', 'Total Reads'])
 
-# Check if var folder exists and create it if it doesn't
-var_folder = "/mnt/d/SequencingData/Harmonisation/DNA/analysis/sample_data/20230823_aDNA_Pa-9027-16S-23S-2X-non-bisulfite-primers-5_1000CFU_924_12/var"
-if not os.path.exists(var_folder):
-    os.makedirs(var_folder)
+    # Check if var folder exists and create it if it doesn't
+    var_folder = f"/mnt/e/SequencingData/Viral_human/analysis/sample_data/{s}/var"
+    # var_folder = f"/mnt/d/SequencingData/Harmonisation/DNA/analysis/sample_data/{s}/var"
+    if not os.path.exists(var_folder):
+        os.makedirs(var_folder)
 
-# Save DataFrame to CSV file in var folder
-csv_file = os.path.join(var_folder, "variances.csv")
-df.to_csv(csv_file, index=False)
+    # Save DataFrame to CSV file in var folder
+    csv_file = os.path.join(var_folder, "variances.csv")
+    df.to_csv(csv_file, index=False)
 
-# Print success message
-print(f"CSV file saved to {csv_file}")
+    # Print success message
+    print(f"CSV file saved to {csv_file}")
