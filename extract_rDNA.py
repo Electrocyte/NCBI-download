@@ -157,16 +157,25 @@ def main(args):
 
         if cpn60:
             primerFnorm = "GAIIIIGCIGGIGAYGGIACIACIAC" # cpn60-UT-274-F Links
+            primerFnorm_ori = primerFnorm
             primerRnorm = "YKIYKITCICCRAAICCIGGIGCYTT" # cpn60-UT-274-R Links
             primerRnorm_ori = primerRnorm
 
             for key, value in iupac_dict.items():
+                primerFnorm = primerFnorm.replace(key, value)
+
+            for key, value in iupac_dict.items():
                 primerRnorm = primerRnorm.replace(key, value)
 
-            primerFrev = reverse_complement(primerFnorm)
+            primerFrev = reverse_complement(primerFnorm_ori)
             primerRrev = reverse_complement(primerRnorm_ori)
+
+            for key, value in iupac_dict.items():
+                primerFrev = primerFrev.replace(key, value)
+
             for key, value in iupac_dict.items():
                 primerRrev = primerRrev.replace(key, value)
+
             _type_ = "cpn60-bac"
 
             save_loc = f"{out_head}/operons/library/BAC-cpn60/"
