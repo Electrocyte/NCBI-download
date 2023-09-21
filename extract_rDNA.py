@@ -238,7 +238,13 @@ def main(args):
                     filename = f"{save_loc}{sequence_name}_{_type_}_{name}.fasta"
 
                     # Check if the length of the sequence is between 1000 and 10000
-                    if 1000 <= len(extracted_sequence) <= 10000:
+                    if _type_ == "cpn60-bac" and 450 <= len(extracted_sequence) <= 1000:
+                        count += 1
+                        # Write to file
+                        print(filename)
+                        with open(filename, "w") as f:
+                            f.write(">" + sequence_name + _type_ + "\n" + extracted_sequence)
+                    elif 1000 <= len(extracted_sequence) <= 10000:
                         count += 1
                         # Write to file
                         print(filename)
