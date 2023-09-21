@@ -10,195 +10,285 @@ from Bio import SeqIO
 import glob
 import re
 import os
+import argparse
 
-#### EDIT HERE ####
-bacterial = False
-if bacterial:
-    fasta_directory = "SequencingData/Centrifuge_libraries/bacteria/"
-    out_head = "" # e.g. /mnt/e/
+def reverse_complement(seq):
+    complement = {
+        'A': 'T',
+        'T': 'A',
+        'C': 'G',
+        'G': 'C',
+        'I': 'I',  # Inosine remains as 'I' in the reverse complement
+        # Include other IUPAC codes if needed
+        'R': 'Y',
+        'Y': 'R',
+        'S': 'S',
+        'W': 'W',
+        'K': 'M',
+        'M': 'K',
+        'B': 'V',
+        'D': 'H',
+        'H': 'D',
+        'V': 'B',
+        'N': 'N'
+    }
+    try:
+        return "".join(complement[base] for base in reversed(seq))
+    except KeyError:
+        print(f"Error: The base '{seq}' is not recognized.")
+        return ""
 
-fungal = True
-
-fungal_centrifuge = False
-if fungal_centrifuge:
-    fasta_directory = "SequencingData/Centrifuge_libraries/any_fungus/"
-    out_head = "" # e.g. /home/yourname
-
-fungal_JGI = False
-if fungal_JGI:
-    _folder_ = "/mnt/e/SequencingData/JGI/"
-
-protozoa_genbank = False
-if protozoa_genbank:
-    _folder_ = "/mnt/e/SequencingData/genbank/"
-
-fungal_genbank = True
-if fungal_genbank:
-    _folder_ = "/mnt/e/SequencingData/genbank/"
-#### EDIT HERE ####
-
-if fungal:
-    # fungal
-    primerFnorm = "CAGTAGTCATATGCTTGTC"  # 18S NS1 short F
-    primerRnorm = "CTATGTTTTAATTAGACAGTCAG"  # 28S RCA95m R
-    primerFrev = "GACAAGCATATGACTACTG" # rev comp
-    primerRrev = "CTGACTGTCTAATTAAAACATAG" # rev comp
-    _type_ = "18S-ITS-28S"
-
-    if fungal_centrifuge:
-        save_loc = f"{out_head}/operons/library/EUK/"
-        fasta_file_paths = f"{fasta_directory}library/fungi/*.fna"
-        seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
-        multiline = False
-
-    if fungal_JGI:
-        save_loc = f"{_folder_}/EUK/"
-        fasta_file_paths = f"{_folder_}/renamed/*.fasta"
-        seqid_loc = f"{_folder_}/operon-{_type_}-JGI-seqids.csv"
-        multiline = True
-
-    if protozoa_genbank:
-        save_loc = f"{_folder_}/EUK-PROTO/"
-        fasta_file_paths = f"{_folder_}/protozoa_fa/*.fasta"
-        seqid_loc = f"{_folder_}/protozoa-operon-{_type_}-NCBI-gbff-seqids.csv"
-        multiline = False
-
-    if fungal_genbank:
-        save_loc = f"{_folder_}/EUK-FUNGI/"
-        fasta_file_paths = f"{_folder_}/fungi_fa/*.fasta"
-        seqid_loc = f"{_folder_}/fungi-operon-{_type_}-NCBI-gbff-seqids.csv"
-        multiline = False
-
-if bacterial:
-    # bacterial
-    primerFnorm = "AGRGTTTGATCMTGGCTCAG"  # 16S 27F expanded
-    # Convert primer sequences to regex pattern
-    primerFnorm = primerFnorm.replace("R", "[AG]").replace("M", "[AC]")
-    primerRnorm = "GACATCGAGGTGCCAAAC"  # 23S 2490R
-    primerFrev = "CTGAGCCAKGATCAAACYCT" # rev comp
-    # Convert primer sequences to regex pattern
-    primerFrev = primerFrev.replace("Y", "[TC]").replace("K", "[GT]")
-    primerRrev = "GTTTGGCACCTCGATGTC" # rev comp
-
-    _type_ = "16S-ITS-23S"
-    save_loc = "{out_head}/operons/library/BAC/"
-    fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
-    seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
-    multiline = False
+iupac_dict = {
+    'R': '[AG]',
+    'Y': '[CT]',
+    'S': '[GC]',
+    'W': '[AT]',
+    'K': '[GT]',
+    'M': '[AC]',
+    'B': '[CGT]',
+    'D': '[AGT]',
+    'H': '[ACT]',
+    'V': '[ACG]',
+    'N': '[ACGT]',
+    'I': '[ACGT]'  # Inosine can pair with any of the canonical bases
+}
 
 
-complement_pair = (primerFnorm, primerRrev)
-rev_complement_pair = (primerFrev, primerRnorm)
+def main(args):
+    location = args.location
+    local = args.local
+    out_head = args.out_head
 
-pairs = {"complement": complement_pair, "revcomp": rev_complement_pair}
+    bacterial = args.bacterial
+    fungal = args.fungal
+    _16S = args._16S
+    rpoB = args.rpoB
+    fungal_centrifuge = args.fungal_centrifuge
+    fungal_JGI = args.fungal_JGI
+    protozoa_genbank = args.protozoa_genbank
+    fungal_genbank = args.fungal_genbank
 
-count = 0
+    if bacterial:
+        if _16S:
+            fasta_directory = f"{location}/bacteria/16S/"
+        if rpoB:
+            fasta_directory = f"{location}/bacteria/rpoB/"
+    if fungal:
+        if fungal_centrifuge:
+            fasta_directory = f"{location}/any_fungus/centrifuge/"
+        if fungal_JGI:
+            _folder_ = f"{local}/JGI/fungal/"
+        if protozoa_genbank:
+            _folder_ = f"{local}/genbank/protozoa/"
+        if fungal_genbank:
+            _folder_ = f"{local}/genbank/fungal/"
 
-for name, p in pairs.items():
+    if fungal:
+        # fungal
+        primerFnorm = "CAGTAGTCATATGCTTGTC"  # 18S NS1 short F
+        primerRnorm = "CTATGTTTTAATTAGACAGTCAG"  # 28S RCA95m R
+        primerFrev = "GACAAGCATATGACTACTG" # rev comp
+        primerRrev = "CTGACTGTCTAATTAAAACATAG" # rev comp
+        _type_ = "18S-ITS-28S"
 
-    primerF = p[0]
-    primerR = p[1]
+        if fungal_centrifuge:
+            save_loc = f"{out_head}/operons/library/EUK/"
+            fasta_file_paths = f"{fasta_directory}library/fungi/*.fna"
+            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
+            multiline = False
 
-    # Convert primer sequences to regex pattern
-    pattern = primerF + "(.*)" + primerR
+        if fungal_JGI:
+            save_loc = f"{_folder_}/EUK/"
+            fasta_file_paths = f"{_folder_}/renamed/*.fasta"
+            seqid_loc = f"{_folder_}/operon-{_type_}-JGI-seqids.csv"
+            multiline = True
 
-    # Define input fasta file path
+        if protozoa_genbank:
+            save_loc = f"{_folder_}/EUK-PROTO/"
+            fasta_file_paths = f"{_folder_}/protozoa_fa/*.fasta"
+            seqid_loc = f"{_folder_}/protozoa-operon-{_type_}-NCBI-gbff-seqids.csv"
+            multiline = False
 
-    print(fasta_file_paths)
+        if fungal_genbank:
+            save_loc = f"{_folder_}/EUK-FUNGI/"
+            fasta_file_paths = f"{_folder_}/fungi_fa/*.fasta"
+            seqid_loc = f"{_folder_}/fungi-operon-{_type_}-NCBI-gbff-seqids.csv"
+            multiline = False
 
-    fasta_file_globs = glob.glob(fasta_file_paths)
-    print(len(fasta_file_globs))
+    if bacterial:
+        # bacterial 16S
+        if _16S:
+            primerFnorm = "AGRGTTTGATCMTGGCTCAG"  # 16S 27F expanded
+            # Convert primer sequences to regex pattern
+            primerFnorm = primerFnorm.replace("R", "[AG]").replace("M", "[AC]") # 16S 27F expanded
+            primerRnorm = "GACATCGAGGTGCCAAAC"  # 23S 2490R
+            primerFrev = "CTGAGCCAKGATCAAACYCT" # rev comp F
+            # Convert primer sequences to regex pattern
+            for key, value in iupac_dict.items():
+                primerFrev = primerFrev.replace(key, value) # rev comp F
+            primerRrev = "GTTTGGCACCTCGATGTC" # rev comp R
+            _type_ = "16S-ITS-23S"
 
-    os.makedirs(save_loc, exist_ok = True)
+            save_loc = f"{out_head}/operons/library/BAC/"
+            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
+            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
+            multiline = False
 
-    for fasta_file_path in fasta_file_globs:
 
-        # Parse fasta file
-        fasta_sequences = SeqIO.parse(open(fasta_file_path), 'fasta')
+        if rpoB:
+            primerFnorm = "CGATCCGAAGGACAACCTGTT" # RpoBF kwon
+            primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
+            primerRnorm_ori = primerRnorm
 
-        # Loop through fasta sequences
-        for i, fasta in enumerate(fasta_sequences):
-            sequence = str(fasta.seq)
-            sequence_name = "_".join(fasta.description.split()[0:4])  # Take the first word of the fasta header as the sequence name
-            # Use regex to remove punctuation from string
-            sequence_name = re.sub(r'(?<!\d)[.,;](?!\d)', '', sequence_name)
-            sequence_name = sequence_name.replace("/", "")
+            for key, value in iupac_dict.items():
+                primerRnorm = primerRnorm.replace(key, value)
 
-            if multiline:
-                base_name = os.path.basename(fasta_file_path)
-                sequence_name = base_name.split("_Assembly")[0]
-                match = re.search(pattern, sequence, re.DOTALL)
-            else:
-                match = re.search(pattern, sequence)
+            primerFrev = reverse_complement(primerFnorm)
+            primerRrev = reverse_complement(primerRnorm_ori)
+            for key, value in iupac_dict.items():
+                primerRrev = primerRrev.replace(key, value)
+            _type_ = "rpoB-bac"
 
-            if match:
-                # Extract sequence
-                extracted_sequence = match.group()
-                print(fasta_file_path, sequence_name)
-                print(match, len(extracted_sequence))
+            save_loc = f"{out_head}/operons/library/BAC-rpoB/"
+            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
+            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
+            multiline = False
 
-                filename = f"{save_loc}{sequence_name}_{_type_}_{name}.fasta"
 
-                # Check if the length of the sequence is between 1000 and 10000
-                if 1000 <= len(extracted_sequence) <= 10000:
-                    count += 1
-                    # Write to file
-                    print(filename)
-                    with open(filename, "w") as f:
-                        f.write(">" + sequence_name + _type_ + "\n" + extracted_sequence)
+
+    complement_pair = (primerFnorm, primerRrev)
+    rev_complement_pair = (primerFrev, primerRnorm)
+
+    pairs = {"complement": complement_pair, "revcomp": rev_complement_pair}
+
+    count = 0
+
+    for name, p in pairs.items():
+
+        primerF = p[0]
+        primerR = p[1]
+
+        # Convert primer sequences to regex pattern
+        pattern = primerF + "(.*)" + primerR
+
+        # Define input fasta file path
+
+        print(fasta_file_paths)
+
+        fasta_file_globs = glob.glob(fasta_file_paths)
+        print(len(fasta_file_globs))
+
+        os.makedirs(save_loc, exist_ok = True)
+
+        for fasta_file_path in fasta_file_globs:
+
+            # Parse fasta file
+            with open(fasta_file_path) as f:
+                fasta_sequences = SeqIO.parse(f, 'fasta')
+
+
+            # Loop through fasta sequences
+            for i, fasta in enumerate(fasta_sequences):
+                sequence = str(fasta.seq)
+                sequence_name = "_".join(fasta.description.split()[0:4])  # Take the first word of the fasta header as the sequence name
+                # Use regex to remove punctuation from string
+                sequence_name = re.sub(r'(?<!\d)[.,;](?!\d)', '', sequence_name)
+                sequence_name = sequence_name.replace("/", "")
+
+                if multiline:
+                    base_name = os.path.basename(fasta_file_path)
+                    sequence_name = base_name.split("_Assembly")[0]
+                    match = re.search(pattern, sequence, re.DOTALL)
                 else:
-                    pattern = primerF + "(.*?)" + primerR
+                    match = re.search(pattern, sequence)
 
-                    matches = re.findall(pattern, extracted_sequence)
-                    minimized_matches = []
-                    print()
-                    print(fasta_file_path)
-                    print(sequence_name)
-                    for match in matches:
-                        no_n = match.count('N')
-                        print(len(match), no_n, len(match)%3)
-                        # if len(match) < 10000:
-                        minimized_matches.append((match, no_n, len(match)%3))
+                if match:
+                    # Extract sequence
+                    extracted_sequence = match.group()
+                    print(fasta_file_path, sequence_name)
+                    print(match, len(extracted_sequence))
 
-                    # Filter the list to keep only tuples where the first item is less than 10000
-                    filtered_matches = [match for match in minimized_matches if len(match[0]) < 10000]
+                    filename = f"{save_loc}{sequence_name}_{_type_}_{name}.fasta"
 
-                    # If filtered list is not empty, find the minimum
-                    if filtered_matches:
-                        best_match = min(filtered_matches, key=lambda x: (x[1], x[2]))
-                        extracted_sequence = best_match[0]
-                        print(f"Found rDNA length: {len(extracted_sequence)}")
-                        if 1000 <= len(extracted_sequence) <= 10000:
-                            count += 1
-                            # Write to file
-                            print(filename)
-                            with open(filename, "w") as f:
-                                f.write(">" + sequence_name + "-" + _type_ + "\n" + extracted_sequence)
-                        print()
+                    # Check if the length of the sequence is between 1000 and 10000
+                    if 1000 <= len(extracted_sequence) <= 10000:
+                        count += 1
+                        # Write to file
+                        print(filename)
+                        with open(filename, "w") as f:
+                            f.write(">" + sequence_name + _type_ + "\n" + extracted_sequence)
                     else:
-                        print("No matches found with first element less than 10000.")
+                        pattern = primerF + "(.*?)" + primerR
 
-original_file_count = count / len(fasta_file_globs) * 100
-print(f"Number of rDNA operon regions found: {count}, {original_file_count:.2f}; {count/original_file_count:.2f}")
+                        matches = re.findall(pattern, extracted_sequence)
+                        minimized_matches = []
+                        print()
+                        print(fasta_file_path)
+                        print(sequence_name)
+                        for match in matches:
+                            no_n = match.count('N')
+                            print(len(match), no_n, len(match)%3)
+                            # if len(match) < 10000:
+                            minimized_matches.append((match, no_n, len(match)%3))
 
-gen_files = glob.glob(f"{save_loc}*a")
+                        # Filter the list to keep only tuples where the first item is less than 10000
+                        filtered_matches = [match for match in minimized_matches if len(match[0]) < 10000]
 
-sseqids = []
-for gen_file in gen_files:
+                        # If filtered list is not empty, find the minimum
+                        if filtered_matches:
+                            best_match = min(filtered_matches, key=lambda x: (x[1], x[2]))
+                            extracted_sequence = best_match[0]
+                            print(f"Found rDNA length: {len(extracted_sequence)}")
+                            if 1000 <= len(extracted_sequence) <= 10000:
+                                count += 1
+                                # Write to file
+                                print(filename)
+                                with open(filename, "w") as f:
+                                    f.write(">" + sequence_name + "-" + _type_ + "\n" + extracted_sequence)
+                            print()
+                        else:
+                            print("No matches found with first element less than 10000.")
 
-    split = gen_file.split("/")[-1]
-    print(split)
-    if multiline:
-        sseqid = "_".join(split.split("_")[2:3])
-        name = " ".join(split.split(".")[0].split("_")[0:2]) + " " + " ".join(split.split(".")[-2].split("_")[-2:])
-    else:
-        sseqid = "_".join(split.split("_")[0:2])
-        name = " ".join(split.split(".")[1].split("_")[1:])
-    sseqids.append([sseqid, name])
+    original_file_count = count / len(fasta_file_globs) * 100
+    print(f"Number of rDNA operon regions found: {count}, {original_file_count:.2f}; {count/original_file_count:.2f}")
 
-with open(seqid_loc, "w") as f_out:
-    print(seqid_loc)
-    f_out.write("code,name\n")
-    f_out.write("\n".join([f"{i},{j}" for i, j in sseqids]))
+    gen_files = glob.glob(f"{save_loc}*a")
 
-# time python extract_rDNA.py
+    sseqids = []
+    for gen_file in gen_files:
+
+        split = gen_file.split("/")[-1]
+        print(split)
+        if multiline:
+            sseqid = "_".join(split.split("_")[2:3])
+            name = " ".join(split.split(".")[0].split("_")[0:2]) + " " + " ".join(split.split(".")[-2].split("_")[-2:])
+        else:
+            sseqid = "_".join(split.split("_")[0:2])
+            name = " ".join(split.split(".")[1].split("_")[1:])
+        sseqids.append([sseqid, name])
+
+    with open(seqid_loc, "w") as f_out:
+        print(seqid_loc)
+        f_out.write("code,name\n")
+        f_out.write("\n".join([f"{i},{j}" for i, j in sseqids]))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Extract rDNA Operon Regions")
+
+    parser.add_argument("-l", "--location", required=True, help="Location of sequencing data Centrifuge libraries.")
+    parser.add_argument("-z", "--local", required=True, help="Local path of sequencing data.")
+    parser.add_argument("-o", "--out_head", required=True, help="Specify the save location.")
+
+    parser.add_argument("-b", "--bacterial", action="store_true", help="Specify if bacterial.")
+    parser.add_argument("-s", "--16S", action="store_true", help="Specify if 16S-23S.")
+    parser.add_argument("-r", "--rpoB", action="store_true", help="Specify if rpoB.")
+
+    parser.add_argument("-f", "--fungal", action="store_true", help="Specify if fungal.")
+    parser.add_argument("-c", "--fungal_centrifuge", action="store_true", help="Specify if using fungal centrifuge.")
+    parser.add_argument("-j", "--fungal_JGI", action="store_true", help="Specify if using fungal JGI.")
+    parser.add_argument("-p", "--protozoa_genbank", action="store_true", help="Specify if using protozoa genbank.")
+    parser.add_argument("-g", "--fungal_genbank", action="store_true", help="Specify if using fungal genbank.")
+
+    args = parser.parse_args()
+    main(args)

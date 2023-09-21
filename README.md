@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Python 3.10 
+- Python 3.10
 - Pipenv (Install it using `pip install pipenv`)
 
 ## Prepare the Pipenv environment to run the scripts
@@ -62,13 +62,13 @@ time python download-genbank.py -t "protozoa" -o "/mnt/genbank/" -f "/mnt/genban
 
 ```bash
 time python3 gbff2fa.py -t "protozoa" -o "/mnt/genbank/"
-time python extract_rDNA.py
+time python extract_rDNA.py -l "ignore/" -z "/folder/with/data/" -o "/out/location/" -f -p # fungi -> protozoa
 ```
 extract_rDNA.py will require you to manually set the parameters within the script.
 
 ```bash
 time python3 gbff2fa.py -t "fungi" -o "/mnt/genbank/"
-time python extract_rDNA.py
+time python extract_rDNA.py -l "ignore/" -z "/folder/with/data/" -o "/out/location/" -f -p # fungi -> genbank
 ```
 
 
