@@ -201,8 +201,8 @@ def main(args):
         for fasta_file_path in fasta_file_globs:
 
             # Parse fasta file
-            with open(fasta_file_path) as f:
-                fasta_sequences = SeqIO.parse(f, 'fasta')
+            with open(fasta_file_path, "r") as handle:
+                fasta_sequences = list(SeqIO.parse(handle, 'fasta'))
 
 
             # Loop through fasta sequences
