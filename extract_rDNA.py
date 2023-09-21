@@ -61,18 +61,20 @@ def main(args):
 
     bacterial = args.bacterial
     fungal = args.fungal
+
     _16S = args._16S
     rpoB = args.rpoB
+    cpn60 = args.cpn60
+
     fungal_centrifuge = args.fungal_centrifuge
     fungal_JGI = args.fungal_JGI
     protozoa_genbank = args.protozoa_genbank
     fungal_genbank = args.fungal_genbank
 
     if bacterial:
-        if _16S:
-            fasta_directory = f"{location}/bacteria/16S/"
-        if rpoB:
-            fasta_directory = f"{location}/bacteria/rpoB/"
+        if _16S or rpoB or cpn60:
+            fasta_directory = f"{location}/bacteria/"
+
     if fungal:
         if fungal_centrifuge:
             fasta_directory = f"{location}/any_fungus/centrifuge/"
@@ -134,7 +136,6 @@ def main(args):
             seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
             multiline = False
 
-
         if rpoB:
             primerFnorm = "CGATCCGAAGGACAACCTGTT" # RpoBF kwon
             primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
@@ -154,7 +155,24 @@ def main(args):
             seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
             multiline = False
 
+        if cpn60:
+            primerFnorm = "GAIIIIGCIGGIGAYGGIACIACIAC" # cpn60-UT-274-F Links
+            primerRnorm = "YKIYKITCICCRAAICCIGGIGCYTT" # cpn60-UT-274-R Links
+            primerRnorm_ori = primerRnorm
 
+            for key, value in iupac_dict.items():
+                primerRnorm = primerRnorm.replace(key, value)
+
+            primerFrev = reverse_complement(primerFnorm)
+            primerRrev = reverse_complement(primerRnorm_ori)
+            for key, value in iupac_dict.items():
+                primerRrev = primerRrev.replace(key, value)
+            _type_ = "cpn60-bac"
+
+            save_loc = f"{out_head}/operons/library/BAC-cpn60/"
+            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
+            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
+            multiline = False
 
     complement_pair = (primerFnorm, primerRrev)
     rev_complement_pair = (primerFrev, primerRnorm)
@@ -283,6 +301,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--bacterial", action="store_true", help="Specify if bacterial.")
     parser.add_argument("-s", "--16S", action="store_true", help="Specify if 16S-23S.")
     parser.add_argument("-r", "--rpoB", action="store_true", help="Specify if rpoB.")
+    parser.add_argument("-n", "--cpn60", action="store_true", help="Specify if cpn60.")
 
     parser.add_argument("-f", "--fungal", action="store_true", help="Specify if fungal.")
     parser.add_argument("-c", "--fungal_centrifuge", action="store_true", help="Specify if using fungal centrifuge.")
