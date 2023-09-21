@@ -62,7 +62,7 @@ def main(args):
     bacterial = args.bacterial
     fungal = args.fungal
 
-    _16S = args._16S
+    _16S = args.r16S
     rpoB = args.rpoB
     cpn60 = args.cpn60
 
@@ -299,7 +299,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--out_head", required=True, help="Specify the save location.")
 
     parser.add_argument("-b", "--bacterial", action="store_true", help="Specify if bacterial.")
-    parser.add_argument("-s", "--16S", action="store_true", help="Specify if 16S-23S.")
+    parser.add_argument("-s", "--r16S", action="store_true", help="Specify if 16S-23S.")
     parser.add_argument("-r", "--rpoB", action="store_true", help="Specify if rpoB.")
     parser.add_argument("-n", "--cpn60", action="store_true", help="Specify if cpn60.")
 
