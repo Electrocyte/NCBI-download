@@ -54,6 +54,24 @@ iupac_dict = {
 }
 
 
+def write_sequence_to_file(sequence_name, _type_, extracted_sequence, filename):
+    """Writes the provided sequence to a file.
+
+    Args:
+        sequence_name (str): The name of the sequence.
+        _type_ (str): The type of the sequence.
+        extracted_sequence (str): The sequence to be written.
+        filename (str): Path to the file where the sequence will be written.
+
+    Returns:
+        int: Returns 1 if the sequence is successfully written, 0 otherwise.
+    """
+    print(filename)
+    with open(filename, "w") as f:
+        f.write(">" + sequence_name + _type_ + "\n" + extracted_sequence)
+    return 1
+
+
 def main(args):
     location = args.location
     local = args.local
@@ -277,19 +295,19 @@ def main(args):
 
                     filename = f"{save_loc}{sequence_name}_{_type_}_{name}.fasta"
 
-                    # Check if the length of the sequence is between 1000 and 10000
+                    # Decision to write to file based on sequence length and type
+                    should_write = False
                     if _type_ == "cpn60-bac" and 450 <= len(extracted_sequence) <= 1000:
-                        count += 1
-                        # Write to file
-                        print(filename)
-                        with open(filename, "w") as f:
-                            f.write(">" + sequence_name + _type_ + "\n" + extracted_sequence)
+                        should_write = True
+                    elif _type_ == "rpoB-OA-bac" and 800 <= len(extracted_sequence) <= 3000:
+                        should_write = True
+                    elif _type_ == "rpoB-A-bac" and 600 <= len(extracted_sequence) <= 1200:
+                        should_write = True
                     elif 1000 <= len(extracted_sequence) <= 10000:
-                        count += 1
-                        # Write to file
-                        print(filename)
-                        with open(filename, "w") as f:
-                            f.write(">" + sequence_name + _type_ + "\n" + extracted_sequence)
+                        should_write = True
+
+                    if should_write:
+                        count += write_sequence_to_file(sequence_name, _type_, extracted_sequence, filename)
                     else:
                         pattern = primerF + "(.*?)" + primerR
 
