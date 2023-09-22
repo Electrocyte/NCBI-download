@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import re
 import argparse
 from typing import List, Dict
@@ -59,23 +60,59 @@ def extract_from_nodes(tax_ids: Dict[str, str], nodes_file: str = "nodes.dmp") -
     return relevant_nodes
 
 
+def generate_dummy_taxonomy(fasta_file: str, save_location: str):
+    """
+    Generates dummy taxonomy files based on the sequence headers in a given FASTA file.
+    :param fasta_file: Path to the FASTA file.
+    :param save_location: Directory to save the generated dummy taxonomy files.
+    """
+    # Step 1: Create seqid_to_taxid.tsv
+    with open(fasta_file, 'r') as f, open(f'{save_location}/seqid_to_taxid.tsv', 'w') as out:
+        for line in f:
+            if line.startswith(">"):
+                header = line.strip()[1:]
+                pseudo_taxid = header.split()[0]  # taking the first part of the header as pseudo taxid
+                out.write(f"{header}\t{pseudo_taxid}\n")
+
+    # Step 2: Create nodes.dmp
+    with open(f'{save_location}/rvdb_nodes.dmp', 'w') as out:
+        out.write("1\t|\t1\t|\tno rank\t|\t\n")  # the root node
+        with open(f'{save_location}/seqid_to_taxid.tsv', 'r') as f:
+            for line in f:
+                _, taxid = line.strip().split("\t")
+                out.write(f"{taxid}\t|\t1\t|\tspecies\t|\t\n")  # making each genome a child of the root
+
+    # Step 3: Create names.dmp
+    with open(f'{save_location}/rvdb_names.dmp', 'w') as out:
+        out.write("1\t|\tRVDB\t|\t\n")  # naming the root node
+        with open(f'{save_location}/seqid_to_taxid.tsv', 'r') as f:
+            for line in f:
+                _, taxid = line.strip().split("\t")
+                out.write(f"{taxid}\t|\t{taxid}\t|\t\n")  # naming each genome by its pseudo taxid
+
+    print("Dummy taxonomy files generated!")
+
+
 def main(args):
-    organism_names = parse_fasta(args.fasta_file)
-    tax_ids = get_taxonomy_id_from_names(organism_names, names_file=args.names_file)
-    relevant_nodes = extract_from_nodes(tax_ids, nodes_file=args.nodes_file)
+    if args.dummy_taxonomy:
+        generate_dummy_taxonomy(args.fasta_file, args.save_location)
+    else:
+        organism_names = parse_fasta(args.fasta_file)
+        tax_ids = get_taxonomy_id_from_names(organism_names, names_file=args.names_file)
+        relevant_nodes = extract_from_nodes(tax_ids, nodes_file=args.nodes_file)
 
-    print("Relevant Taxonomy IDs:", tax_ids)
-    print("\nRelevant Nodes from nodes.dmp:")
-    for line in relevant_nodes:
-        print(line, end='')
+        print("Relevant Taxonomy IDs:", tax_ids)
+        print("\nRelevant Nodes from nodes.dmp:")
+        for line in relevant_nodes:
+            print(line, end='')
 
-    # Saving relevant data to new files at the specified save location
-    with open(f'{args.save_location}/rvdb_names.dmp', 'w') as names_out:
-        for name, tid in tax_ids.items():
-            names_out.write(f"{tid}\t|\t{name}\t|\t\n")
+        # Saving relevant data to new files at the specified save location
+        with open(f'{args.save_location}/rvdb_names.dmp', 'w') as names_out:
+            for name, tid in tax_ids.items():
+                names_out.write(f"{tid}\t|\t{name}\t|\t\n")
 
-    with open(f'{args.save_location}/rvdb_nodes.dmp', 'w') as nodes_out:
-        nodes_out.writelines(relevant_nodes)
+        with open(f'{args.save_location}/rvdb_nodes.dmp', 'w') as nodes_out:
+            nodes_out.writelines(relevant_nodes)
 
 
 # Main function
@@ -86,6 +123,7 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--names_file", type=str, help="Path to the names.dmp file.")
     parser.add_argument("-o", "--nodes_file", type=str, help="Path to the nodes.dmp file.")
     parser.add_argument("-s", "--save_location", type=str, default=".", help="Directory to save the new .dmp files. Default is the current directory.")
+    parser.add_argument("--dummy_taxonomy", action='store_true', help="Generate dummy taxonomy files based on FASTA headers instead of extracting from provided dmp files.")
 
     args = parser.parse_args()
 
