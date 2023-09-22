@@ -63,7 +63,9 @@ def main(args):
     fungal = args.fungal
 
     _16S = args.r16S
-    rpoB = args.rpoB
+    rpoB_KA = args.rpoB_KA
+    rpoB_OA = args.rpoB_OA
+    rpoB_A = args.rpoB_A
     cpn60 = args.cpn60
 
     fungal_centrifuge = args.fungal_centrifuge
@@ -72,7 +74,7 @@ def main(args):
     fungal_genbank = args.fungal_genbank
 
     if bacterial:
-        if _16S or rpoB or cpn60:
+        if _16S or rpoB_KA or rpoB_OA or cpn60 or rpoB_A:
             fasta_directory = f"{location}/bacteria/"
 
     if fungal:
@@ -136,7 +138,7 @@ def main(args):
             seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
             multiline = False
 
-        if rpoB:
+        if rpoB_KA:
             primerFnorm = "CGATCCGAAGGACAACCTGTT" # RpoBF kwon
             primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
             primerRnorm_ori = primerRnorm
@@ -151,6 +153,44 @@ def main(args):
             _type_ = "rpoB-bac"
 
             save_loc = f"{out_head}/operons/library/BAC-rpoB/"
+            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
+            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
+            multiline = False
+
+        if rpoB_OA:
+            primerFnorm = "GGYTWYGAAGTNCGHGACGTDCA" # Univ_rpoB_F_deg Ogier
+            primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
+            primerRnorm_ori = primerRnorm
+
+            for key, value in iupac_dict.items():
+                primerRnorm = primerRnorm.replace(key, value)
+
+            primerFrev = reverse_complement(primerFnorm)
+            primerRrev = reverse_complement(primerRnorm_ori)
+            for key, value in iupac_dict.items():
+                primerRrev = primerRrev.replace(key, value)
+            _type_ = "rpoB-OA-bac"
+
+            save_loc = f"{out_head}/operons/library/BAC-rpoB-OA/"
+            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
+            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
+            multiline = False
+
+        if rpoB_A:
+            primerFnorm = "GCITTYATGCCITGGAAYGG" # gProteoRpoB2413F Adekambi
+            primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
+            primerRnorm_ori = primerRnorm
+
+            for key, value in iupac_dict.items():
+                primerRnorm = primerRnorm.replace(key, value)
+
+            primerFrev = reverse_complement(primerFnorm)
+            primerRrev = reverse_complement(primerRnorm_ori)
+            for key, value in iupac_dict.items():
+                primerRrev = primerRrev.replace(key, value)
+            _type_ = "rpoB-A-bac"
+
+            save_loc = f"{out_head}/operons/library/BAC-rpoB-A/"
             fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
             seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
             multiline = False
@@ -315,7 +355,9 @@ if __name__ == "__main__":
 
     parser.add_argument("-b", "--bacterial", action="store_true", help="Specify if bacterial.")
     parser.add_argument("-s", "--r16S", action="store_true", help="Specify if 16S-23S.")
-    parser.add_argument("-r", "--rpoB", action="store_true", help="Specify if rpoB.")
+    parser.add_argument("-r", "--rpoB_KA", action="store_true", help="Specify if rpoB KA.")
+    parser.add_argument("-a", "--rpoB_OA", action="store_true", help="Specify if rpoB OA.")
+    parser.add_argument("-t", "--rpoB_A", action="store_true", help="Specify if rpoB A.")
     parser.add_argument("-n", "--cpn60", action="store_true", help="Specify if cpn60.")
 
     parser.add_argument("-f", "--fungal", action="store_true", help="Specify if fungal.")
