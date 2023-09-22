@@ -35,7 +35,7 @@ def get_taxonomy_id_from_names(seq_names: List[str], names_file: str = "names.dm
     with open(names_file, 'r') as f:
         for line in f:
             for name in seq_names:
-                if re.search(f"\t\|\t{name}\t\|\t", line) and "scientific name" in line:
+                if "scientific name" in line and re.search(f"\t\|\t{re.escape(name)}\t\|\t", line):
                     tax_id = line.split("\t|\t")[0]
                     tax_ids[name] = tax_id
     return tax_ids
