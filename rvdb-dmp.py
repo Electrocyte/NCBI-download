@@ -62,12 +62,12 @@ def main(args):
     for line in relevant_nodes:
         print(line, end='')
 
-    # Saving relevant data to new files
-    with open('rvdb_names.dmp', 'w') as names_out:
+    # Saving relevant data to new files at the specified save location
+    with open(f'{args.save_location}/rvdb_names.dmp', 'w') as names_out:
         for name, tid in tax_ids.items():
             names_out.write(f"{tid}\t|\t{name}\t|\t\n")
 
-    with open('rvdb_nodes.dmp', 'w') as nodes_out:
+    with open(f'{args.save_location}/rvdb_nodes.dmp', 'w') as nodes_out:
         nodes_out.writelines(relevant_nodes)
 
 
@@ -78,6 +78,7 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--fasta_file", type=str, help="Path to the FASTA file.")
     parser.add_argument("-n", "--names_file", type=str, help="Path to the names.dmp file.")
     parser.add_argument("-o", "--nodes_file", type=str, help="Path to the nodes.dmp file.")
+    parser.add_argument("-s", "--save_location", type=str, default=".", help="Directory to save the new .dmp files. Default is the current directory.")
 
     args = parser.parse_args()
 

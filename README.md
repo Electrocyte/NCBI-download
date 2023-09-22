@@ -100,5 +100,5 @@ wget --recursive --no-parent --timestamping --cut-dirs=3 --no-host-directories -
 # RVDB centrifuge index build
 
 ```bash
-python rvdb-dmp.py -f "RVDBs/C-RVDBv25.0.fasta" -n "taxonomy/names.dmp" -o "taxonomy/nodes.dmp"
+python rvdb-dmp.py -f "RVDBs/C-RVDBv25.0.fasta" -n "taxonomy/names.dmp" -o "taxonomy/nodes.dmp" -s "RVDBs/"
 ```
