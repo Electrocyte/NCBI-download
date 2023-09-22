@@ -96,3 +96,9 @@ This will use the taxonomy names.dmp and nodes.dmp to fill in the missing taxonI
 wget --recursive --no-parent --timestamping --cut-dirs=3 --no-host-directories --accept "*.gbff.gz" -P fungi/ ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/fungi/
 wget --recursive --no-parent --timestamping --cut-dirs=3 --no-host-directories --accept "*.gbff.gz" -P protozoa/ ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/protozoa/
 ```
+
+# RVDB centrifuge index build
+
+```bash
+python rvdb-dmp.py -f "RVDBs/C-RVDBv25.0.fasta" -n "taxonomy/names.dmp" -o "taxonomy/nodes.dmp"
+```
