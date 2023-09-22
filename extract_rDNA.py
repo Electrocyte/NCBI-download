@@ -54,6 +54,77 @@ iupac_dict = {
 }
 
 
+gene_config = {
+    "_16S": {
+        "primerFnorm": "AGRGTTTGATCMTGGCTCAG",
+        "primerRnorm": "GACATCGAGGTGCCAAAC",
+        "save_folder": "BAC",
+        "_type_": "16S-ITS-23S"
+        # ... add other configurations if required
+    },
+    "rpoB_KA": {
+        "primerFnorm": "CGATCCGAAGGACAACCTGTT",
+        "primerRnorm": "TCRTCRTAIGGCATRTCYTC",
+        "save_folder": "BAC-rpoB",
+        "_type_": "rpoB-bac"
+        # ... add other configurations if required
+    },
+    "rpoB_OA": {
+        "primerFnorm": "GGYTWYGAAGTNCGHGACGTDCA",
+        "primerRnorm": "TCRTCRTAIGGCATRTCYTC",
+        "save_folder": "BAC-rpoB-OA",
+        "_type_": "rpoB-OA-bac"
+        # ... add other configurations if required
+    },
+    "rpoB_A": {
+        "primerFnorm": "GCITTYATGCCITGGAAYGG",
+        "primerRnorm": "TCRTCRTAIGGCATRTCYTC",
+        "save_folder": "BAC-rpoB-A",
+        "_type_": "rpoB-A-bac"
+        # ... add other configurations if required
+    },
+    "cpn60": {
+        "primerFnorm": "GAIIIIGCIGGIGAYGGIACIACIAC",
+        "primerRnorm": "YKIYKITCICCRAAICCIGGIGCYTT",
+        "save_folder": "BAC-cpn60",
+        "_type_": "cpn60-bac"
+        # ... add other configurations if required
+    }
+}
+
+
+def setup_gene_config(gene, iupac_dict, out_head, fasta_directory):
+    config = gene_config[gene]
+
+    primerFnorm = config["primerFnorm"]
+    primerRnorm = config["primerRnorm"]
+
+    # Store original values
+    primerFnorm_ori = primerFnorm
+    primerRnorm_ori = primerRnorm
+
+    # Convert IUPAC codes to regular expressions
+    for key, value in iupac_dict.items():
+        primerFnorm = primerFnorm.replace(key, value)
+        primerRnorm = primerRnorm.replace(key, value)
+
+    # Calculate reverse complement
+    primerFrev = reverse_complement(primerFnorm_ori)
+    primerRrev = reverse_complement(primerRnorm_ori)
+
+    # Convert IUPAC codes in the reverse complements
+    for key, value in iupac_dict.items():
+        primerFrev = primerFrev.replace(key, value)
+        primerRrev = primerRrev.replace(key, value)
+
+    # Set up locations
+    save_loc = f"{out_head}/operons/library/{config['save_folder']}/"
+    fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
+    seqid_loc = f"{out_head}/operons/operon-{config['_type_']}-NCBI-seqids.csv"
+
+    return primerFnorm, primerRnorm, primerFrev, primerRrev, save_loc, fasta_file_paths, seqid_loc
+
+
 def write_sequence_to_file(sequence_name, _type_, extracted_sequence, filename):
     """Writes the provided sequence to a file.
 
@@ -138,126 +209,20 @@ def main(args):
             multiline = False
 
     if bacterial:
-        # bacterial 16S
         if _16S:
-            primerFnorm = "AGRGTTTGATCMTGGCTCAG"  # 16S 27F expanded
-            # Convert primer sequences to regex pattern
-            primerFnorm = primerFnorm.replace("R", "[AG]").replace("M", "[AC]") # 16S 27F expanded
-            primerRnorm = "GACATCGAGGTGCCAAAC"  # 23S 2490R
-            primerFrev = "CTGAGCCAKGATCAAACYCT" # rev comp F
-            # Convert primer sequences to regex pattern
-            for key, value in iupac_dict.items():
-                primerFrev = primerFrev.replace(key, value) # rev comp F
-            primerRrev = "GTTTGGCACCTCGATGTC" # rev comp R
-            _type_ = "16S-ITS-23S"
-
-            save_loc = f"{out_head}/operons/library/BAC/"
-            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
-            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
-            multiline = False
+            primerFnorm, primerRnorm, primerFrev, primerRrev, save_loc, fasta_file_paths, seqid_loc = setup_gene_config("_16S", iupac_dict, out_head, fasta_directory)
 
         if rpoB_KA:
-            primerFnorm = "CGATCCGAAGGACAACCTGTT" # RpoBF kwon
-            primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
-            primerRnorm_ori = primerRnorm
-
-            for key, value in iupac_dict.items():
-                primerRnorm = primerRnorm.replace(key, value)
-
-            primerFrev = reverse_complement(primerFnorm)
-            primerRrev = reverse_complement(primerRnorm_ori)
-            for key, value in iupac_dict.items():
-                primerRrev = primerRrev.replace(key, value)
-            _type_ = "rpoB-bac"
-
-            save_loc = f"{out_head}/operons/library/BAC-rpoB/"
-            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
-            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
-            multiline = False
+            primerFnorm, primerRnorm, primerFrev, primerRrev, save_loc, fasta_file_paths, seqid_loc = setup_gene_config("rpoB_KA", iupac_dict, out_head, fasta_directory)
 
         if rpoB_OA:
-            primerFnorm = "GGYTWYGAAGTNCGHGACGTDCA" # Univ_rpoB_F_deg Ogier
-            primerFnorm_ori = primerFnorm
-            primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
-            primerRnorm_ori = primerRnorm
-
-            for key, value in iupac_dict.items():
-                primerFnorm = primerFnorm.replace(key, value)
-
-            for key, value in iupac_dict.items():
-                primerRnorm = primerRnorm.replace(key, value)
-
-            primerFrev = reverse_complement(primerFnorm_ori)
-            primerRrev = reverse_complement(primerRnorm_ori)
-
-            for key, value in iupac_dict.items():
-                primerFrev = primerFrev.replace(key, value)
-
-            for key, value in iupac_dict.items():
-                primerRrev = primerRrev.replace(key, value)
-
-            _type_ = "rpoB-OA-bac"
-
-            save_loc = f"{out_head}/operons/library/BAC-rpoB-OA/"
-            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
-            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
-            multiline = False
+            primerFnorm, primerRnorm, primerFrev, primerRrev, save_loc, fasta_file_paths, seqid_loc = setup_gene_config("rpoB_OA", iupac_dict, out_head, fasta_directory)
 
         if rpoB_A:
-            primerFnorm = "GCITTYATGCCITGGAAYGG" # gProteoRpoB2413F Adekambi
-            primerFnorm_ori = primerFnorm
-            primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
-            primerRnorm_ori = primerRnorm
-
-            for key, value in iupac_dict.items():
-                primerFnorm = primerFnorm.replace(key, value)
-
-            for key, value in iupac_dict.items():
-                primerRnorm = primerRnorm.replace(key, value)
-
-            primerFrev = reverse_complement(primerFnorm_ori)
-            primerRrev = reverse_complement(primerRnorm_ori)
-
-            for key, value in iupac_dict.items():
-                primerFrev = primerFrev.replace(key, value)
-
-            for key, value in iupac_dict.items():
-                primerRrev = primerRrev.replace(key, value)
-
-            _type_ = "rpoB-A-bac"
-
-            save_loc = f"{out_head}/operons/library/BAC-rpoB-A/"
-            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
-            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
-            multiline = False
+            primerFnorm, primerRnorm, primerFrev, primerRrev, save_loc, fasta_file_paths, seqid_loc = setup_gene_config("rpoB_A", iupac_dict, out_head, fasta_directory)
 
         if cpn60:
-            primerFnorm = "GAIIIIGCIGGIGAYGGIACIACIAC" # cpn60-UT-274-F Links
-            primerFnorm_ori = primerFnorm
-            primerRnorm = "YKIYKITCICCRAAICCIGGIGCYTT" # cpn60-UT-274-R Links
-            primerRnorm_ori = primerRnorm
-
-            for key, value in iupac_dict.items():
-                primerFnorm = primerFnorm.replace(key, value)
-
-            for key, value in iupac_dict.items():
-                primerRnorm = primerRnorm.replace(key, value)
-
-            primerFrev = reverse_complement(primerFnorm_ori)
-            primerRrev = reverse_complement(primerRnorm_ori)
-
-            for key, value in iupac_dict.items():
-                primerFrev = primerFrev.replace(key, value)
-
-            for key, value in iupac_dict.items():
-                primerRrev = primerRrev.replace(key, value)
-
-            _type_ = "cpn60-bac"
-
-            save_loc = f"{out_head}/operons/library/BAC-cpn60/"
-            fasta_file_paths = f"{fasta_directory}library/bacteria/*.fna"
-            seqid_loc = f"{out_head}/operons/operon-{_type_}-NCBI-seqids.csv"
-            multiline = False
+            primerFnorm, primerRnorm, primerFrev, primerRrev, save_loc, fasta_file_paths, seqid_loc = setup_gene_config("cpn60", iupac_dict, out_head, fasta_directory)
 
     complement_pair = (primerFnorm, primerRrev)
     rev_complement_pair = (primerFrev, primerRnorm)
