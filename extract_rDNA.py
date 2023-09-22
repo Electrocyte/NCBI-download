@@ -177,16 +177,25 @@ def main(args):
 
         if rpoB_OA:
             primerFnorm = "GGYTWYGAAGTNCGHGACGTDCA" # Univ_rpoB_F_deg Ogier
+            primerFnorm_ori = primerFnorm
             primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
             primerRnorm_ori = primerRnorm
 
             for key, value in iupac_dict.items():
+                primerFnorm = primerFnorm.replace(key, value)
+
+            for key, value in iupac_dict.items():
                 primerRnorm = primerRnorm.replace(key, value)
 
-            primerFrev = reverse_complement(primerFnorm)
+            primerFrev = reverse_complement(primerFnorm_ori)
             primerRrev = reverse_complement(primerRnorm_ori)
+
+            for key, value in iupac_dict.items():
+                primerFrev = primerFrev.replace(key, value)
+
             for key, value in iupac_dict.items():
                 primerRrev = primerRrev.replace(key, value)
+
             _type_ = "rpoB-OA-bac"
 
             save_loc = f"{out_head}/operons/library/BAC-rpoB-OA/"
@@ -196,16 +205,25 @@ def main(args):
 
         if rpoB_A:
             primerFnorm = "GCITTYATGCCITGGAAYGG" # gProteoRpoB2413F Adekambi
+            primerFnorm_ori = primerFnorm
             primerRnorm = "TCRTCRTAIGGCATRTCYTC" # gProteoRpoB3272R Adekambi
             primerRnorm_ori = primerRnorm
 
             for key, value in iupac_dict.items():
+                primerFnorm = primerFnorm.replace(key, value)
+
+            for key, value in iupac_dict.items():
                 primerRnorm = primerRnorm.replace(key, value)
 
-            primerFrev = reverse_complement(primerFnorm)
+            primerFrev = reverse_complement(primerFnorm_ori)
             primerRrev = reverse_complement(primerRnorm_ori)
+
+            for key, value in iupac_dict.items():
+                primerFrev = primerFrev.replace(key, value)
+
             for key, value in iupac_dict.items():
                 primerRrev = primerRrev.replace(key, value)
+
             _type_ = "rpoB-A-bac"
 
             save_loc = f"{out_head}/operons/library/BAC-rpoB-A/"
@@ -306,6 +324,7 @@ def main(args):
                     elif 1000 <= len(extracted_sequence) <= 10000:
                         should_write = True
 
+                    print(should_write, _type_)
                     if should_write:
                         count += write_sequence_to_file(sequence_name, _type_, extracted_sequence, filename)
                     else:
