@@ -10,8 +10,15 @@ def parse_fasta(filename: str) -> List[str]:
     :param filename: Path to the FASTA file.
     :return: A list of organism names from the FASTA headers.
     """
+    organisms = []
     with open(filename, 'r') as f:
-        organisms = [line.strip().split('|')[4] for line in f if line.startswith(">")]
+        for line in f:
+            if line.startswith(">"):
+                parts = line.strip().split('|')
+                if len(parts) > 4:  # Ensure there are enough parts
+                    organisms.append(parts[4])
+                else:
+                    print(f"Warning: Unexpected header format for line {line.strip()}")
     return organisms
 
 
