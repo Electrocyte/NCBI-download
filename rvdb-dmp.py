@@ -90,7 +90,7 @@ def generate_dummy_taxonomy(fasta_file: str, save_location: str):
                 _, taxid = line.strip().split("\t")
                 out.write(f"{taxid}\t|\t{taxid}\t|\t\n")  # naming each genome by its pseudo taxid
 
-    print("Dummy taxonomy files generated!")
+    print("Dummy taxonomy files generated at {save_location}!")
 
 
 def main(args):
