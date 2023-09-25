@@ -123,7 +123,7 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--names_file", type=str, help="Path to the names.dmp file.")
     parser.add_argument("-o", "--nodes_file", type=str, help="Path to the nodes.dmp file.")
     parser.add_argument("-s", "--save_location", type=str, default=".", help="Directory to save the new .dmp files. Default is the current directory.")
-    parser.add_argument("--dummy_taxonomy", action='store_true', help="Generate dummy taxonomy files based on FASTA headers instead of extracting from provided dmp files.")
+    parser.add_argument("-d", "--dummy_taxonomy", action='store_true', help="Generate dummy taxonomy files based on FASTA headers instead of extracting from provided dmp files.")
 
     args = parser.parse_args()
 
