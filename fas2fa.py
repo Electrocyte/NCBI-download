@@ -21,7 +21,7 @@ def fasta_splitter(input_file: str, output_dir: str, limit_filename_length: bool
         # If filename length should be limited
         if limit_filename_length:
             # Take 10 first and 20 last characters
-            clean_header = clean_header[:10] + clean_header[-20:]
+            clean_header = clean_header[:10] + clean_header[-30:]
 
         seq = '\n'.join(lines[1:])
         output_file = os.path.join(output_dir, clean_header + '.fasta')
