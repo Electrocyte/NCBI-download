@@ -24,6 +24,7 @@ def process_samples(input_directory: str, csv_path: str) -> None:
         sample = "_".join(str(field) for field in sample_fields)
         barcode = row['Barcode']
         input_file_paths = glob.glob(f"{input_directory}/{sample}/{barcode}/fastq_pass/*.fastq")
+        print(f"Processing {len(input_file_paths)} FASTQ files for sample {sample}...")
         for input_file_path in input_file_paths:
             output_file_path = f"{input_directory}/analysis/sample_data/{sample}/trimmed/adjusted-1Q.fastq"
             process_fastq(input_file_path, output_file_path)
