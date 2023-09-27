@@ -18,7 +18,7 @@ def process_fastq(input_path: str, output_path: str) -> None:
 
 
 def process_samples(input_directory: str, csv_path: str) -> None:
-    df = pd.read_csv(csv_path, sep="\t")
+    df = pd.read_csv(csv_path, sep=",")
     for index, row in df.iterrows():
         sample_fields = [row['date'], row['NA'], row['strain'], row['concentration_CFU'], row['batch'], row['duration_h']]
         sample = "_".join(str(field) for field in sample_fields)
