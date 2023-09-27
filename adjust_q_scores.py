@@ -9,6 +9,9 @@ def adjust_q_scores(line: str) -> str:
 
 
 def process_fastq(input_path: str, output_path: str) -> None:
+    output_dir = os.path.dirname(output_path)  # Get the directory part of output_path
+    os.makedirs(output_dir, exist_ok=True)  # Create the directory if it does not exist
+
     with open(input_path, 'r') as infile, open(output_path, 'w') as outfile:
         for index, line in enumerate(infile):
             if (index + 1) % 4 == 0:
@@ -26,7 +29,11 @@ def process_samples(input_directory: str, csv_path: str) -> None:
         input_file_paths = glob.glob(f"{input_directory}/{sample}/{barcode}/fastq_pass/*.fastq")
         print(f"Processing {len(input_file_paths)} FASTQ files for sample {sample}...")
         for input_file_path in input_file_paths:
-            output_file_path = f"{input_directory}/analysis/sample_data/{sample}/trimmed/adjusted-1Q.fastq"
+            os.makedirs(f"{input_directory}/analysis/", exist_ok=True)
+            os.makedirs(f"{input_directory}/analysis/sample_data/", exist_ok=True)
+            os.makedirs(f"{input_directory}/analysis/sample_data/{sample}/", exist_ok=True)
+            os.makedirs(f"{input_directory}/analysis/sample_data/{sample}/trimmed/", exist_ok=True)
+            output_file_path = f"{input_directory}/analysis/sample_data/{sample}/trimmed/{barcode}_adjusted-1Q.fastq"
             process_fastq(input_file_path, output_file_path)
 
 
