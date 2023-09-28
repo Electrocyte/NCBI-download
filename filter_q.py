@@ -1,4 +1,5 @@
 import subprocess
+import argparse
 import os
 
 def run_nanofilt(quality: int, input_file: str, output_directory: str) -> None:
@@ -39,8 +40,13 @@ def process_files(directory: str) -> None:
                 run_nanofilt(17, file_path, output_directory)
 
 
-# Set the directory containing your FASTQ files
-dir_path = '/mnt/usersData/DNA_uHQ/analysis/sample_data'
+def main():
+    parser = argparse.ArgumentParser(description="Process FASTQ files with NanoFilt.")
+    parser.add_argument("-d", "--directory", type=str, help="Path to the directory containing FASTQ files.")
 
-# Process all files in the directory
-process_files(dir_path)
+    args = parser.parse_args()
+    process_files(args.directory)
+
+
+if __name__ == '__main__':
+    main()
