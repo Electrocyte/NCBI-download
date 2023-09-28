@@ -1,15 +1,17 @@
 import subprocess
 import os
 
-def run_nanofilt(quality: int, input_file: str, output_file: str) -> None:
+def run_nanofilt(quality: int, input_file: str, output_directory: str) -> None:
     """
     Runs NanoFilt on the input file with the specified quality,
-    and writes the output to the output file.
+    and writes the output to the output directory.
 
     :param quality: Quality threshold for NanoFilt.
     :param input_file: Path to the input FASTQ file.
-    :param output_file: Path to the output FASTQ file.
+    :param output_directory: Path to the output directory.
     """
+    output_file = os.path.join(output_directory, f"q{quality}.fastq")
+
     # Run the NanoFilt command
     print(output_file)
     with open(output_file, 'w') as outfile:
@@ -27,11 +29,14 @@ def process_files(directory: str) -> None:
         for file in files:
             if file.startswith('trimmed') and file.endswith('.fastq'):
                 file_path = os.path.join(root, file)
-                base, ext = os.path.splitext(file)
+
+                # Set output_directory as the current root directory
+                output_directory = root
+                os.makedirs(output_directory, exist_ok=True)
 
                 # Run NanoFilt with quality 14 and 17
-                run_nanofilt(14, file_path, f"{base}_q14{ext}")
-                run_nanofilt(17, file_path, f"{base}_q17{ext}")
+                run_nanofilt(14, file_path, output_directory)
+                run_nanofilt(17, file_path, output_directory)
 
 
 # Set the directory containing your FASTQ files
