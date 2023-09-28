@@ -44,6 +44,7 @@ def process_samples(input_directory: str, csv_path: str) -> None:
         for n, input_file_path in enumerate(input_file_paths):
             os.makedirs(f"{input_directory}/{sample}/adjusted/", exist_ok=True)
             temp_output_file_path = f"{input_directory}/{sample}/adjusted/{n}-{barcode}_adjusted-1Q.fastq"
+            print(temp_output_file_path)
             process_fastq(input_file_path, temp_output_file_path)
             temp_output_file_paths.append(temp_output_file_path)
 
@@ -51,14 +52,15 @@ def process_samples(input_directory: str, csv_path: str) -> None:
         output_file_path = f"{input_directory}/analysis/sample_data/{sample}/trimmed/{barcode}_adjusted-1Q.fastq"
 
         # Concatenate all temporary output files to the final output file path
+        print(f"Concatenating {len(temp_output_file_paths)} FASTQ files to {output_file_path}...")
         with open(output_file_path, 'wb') as outfile:
             for file_path in temp_output_file_paths:
                 with open(file_path, 'rb') as infile:
                     shutil.copyfileobj(infile, outfile)
 
-        # Optionally, you can remove the temporary files after concatenation.
-        for file_path in temp_output_file_paths:
-            os.remove(file_path)
+        # # Optionally, you can remove the temporary files after concatenation.
+        # for file_path in temp_output_file_paths:
+        #     os.remove(file_path)
 
 
 def main() -> None:
