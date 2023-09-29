@@ -19,6 +19,24 @@ def run_nanofilt(quality: int, input_file: str, output_directory: str) -> None:
         subprocess.run(['NanoFilt', '-q', str(quality), input_file], stdout=outfile)
 
 
+def process_files(root: str, file: str) -> None:
+    """
+    Abstracts the process of running NanoFilt on a file.
+
+    :param root: Path to the root directory.
+    :param file: Path to the file.
+    """
+    file_path = os.path.join(root, file)
+
+    # Set output_directory as the current root directory
+    output_directory = root
+    os.makedirs(output_directory, exist_ok=True)
+
+    # Run NanoFilt with quality 14 and 17
+    run_nanofilt(14, file_path, output_directory)
+    run_nanofilt(17, file_path, output_directory)
+
+
 def process_files(directory: str) -> None:
     """
     Process all FASTQ files in the specified directory with NanoFilt.
@@ -29,15 +47,10 @@ def process_files(directory: str) -> None:
     for root, dirs, files in os.walk(directory):
         for file in files:
             if file.startswith('trimmed') and file.endswith('.fastq'):
-                file_path = os.path.join(root, file)
+                process_files(root, file)
 
-                # Set output_directory as the current root directory
-                output_directory = root
-                os.makedirs(output_directory, exist_ok=True)
-
-                # Run NanoFilt with quality 14 and 17
-                run_nanofilt(14, file_path, output_directory)
-                run_nanofilt(17, file_path, output_directory)
+            elif file.startswith('barcode') and file.endswith('.fastq'):
+                process_files(root, file)
 
 
 def main():
