@@ -19,7 +19,7 @@ def run_nanofilt(quality: int, input_file: str, output_directory: str) -> None:
         subprocess.run(['NanoFilt', '-q', str(quality), input_file], stdout=outfile)
 
 
-def process_files(root: str, file: str) -> None:
+def abstract_process_files(root: str, file: str) -> None:
     """
     Abstracts the process of running NanoFilt on a file.
 
@@ -47,10 +47,10 @@ def process_files(directory: str) -> None:
     for root, dirs, files in os.walk(directory):
         for file in files:
             if file.startswith('trimmed') and file.endswith('.fastq'):
-                process_files(root, file)
+                abstract_process_files(root, file)
 
             elif file.startswith('barcode') and file.endswith('.fastq'):
-                process_files(root, file)
+                abstract_process_files(root, file)
 
 
 def main():
