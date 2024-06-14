@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import numpy as np
 import pandas as pd
 from skbio import DistanceMatrix
@@ -9,7 +12,8 @@ from skbio.stats.distance import permanova
 # For each categorical variable you are interested in, perform PERMANOVA:
 
 #### EDIT HERE ####
-directory = "/mnt/path/to/Confidence/"
+# directory = "/mnt/path/to/Confidence/"
+directory = "/mnt/e/SequencingData/CRAAM/analysis/Confidence/"
 #### EDIT HERE ####
 
 coords_file = f"{directory}/coord-df.csv"
@@ -23,13 +27,30 @@ plotCols = ['BSA', 'Kit', 'PCR', 'Spike', 'TC-Spike', 'Polymerase',
        'Cycles', 'Flow-Cell']
 
 for col in plotCols:
-    # Convert coordinates into a pandas DataFrame
+    # Load coordinates and sample labels
     coords_df = pd.read_csv(coords_file)
     coords_df["Sample"] = sample_df[col]  # Add sample names
 
-    # Calculate PERMANOVA
-    dm = DistanceMatrix(bc_array)
-    results = permanova(dm, coords_df["Sample"])
+    # Check if there is more than one unique group in the 'Sample' column
+    if len(coords_df["Sample"].unique()) > 1:
+        # Calculate PERMANOVA
+        dm = DistanceMatrix(bc_array)
+        results = permanova(dm, coords_df["Sample"])
+        # Print p-value
+        print(f"{col} p-value: ", results['p-value'])
+    else:
+        print(f"No variation OR DATA in {col}, skipping PERMANOVA analysis.")
 
-    # Print p-value
-    print(f"{col} p-value: ", results['p-value'])
+# for col in plotCols:
+#     # Convert coordinates into a pandas DataFrame
+#     coords_df = pd.read_csv(coords_file)
+#     coords_df["Sample"] = sample_df[col]  # Add sample names
+
+#     # Calculate PERMANOVA
+#     dm = DistanceMatrix(bc_array)
+#     results = permanova(dm, coords_df["Sample"])
+
+#     # Print p-value
+#     print(f"{col} p-value: ", results['p-value'])
+
+# time ./permanova.py
